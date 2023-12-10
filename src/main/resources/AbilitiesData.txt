@@ -1,0 +1,3 @@
+Rumble,Flamespitter,20,10,Spits front of a user dealing 80dmg/s for 5s
+Rumble,ScrapShield,30,6,Gives 10%HP shield
+Rumble,ElectroHarpoon,30,4, deals 40dmg reduces enemy MS by 8%

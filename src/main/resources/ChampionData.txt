@@ -1,0 +1,4 @@
+Rumble,ApSustainDPS
+Rell,TankSupport
+Riven,Bruser
+Malphite,Tank/BurstDPS

@@ -1,0 +1,3 @@
+Duskblade,+10AD,+10AS,+100HP
+FrozenHeart,+1000HP,+20ARM,20MS
+DemonicEmbrace,+20AP,+100Hp
