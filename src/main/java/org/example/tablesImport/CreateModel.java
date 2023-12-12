@@ -21,11 +21,14 @@ import java.util.Objects;
 import static org.example.tables.Champions.fetchChampionByName;
 import static org.example.tables.Items.createItemsForBuild;
 
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+@Component
 public class CreateModel {
 
-    static EntityManager entityManager = null;
-    static EntityManagerFactory entityManagerFactory = null;
+    static EntityManager entityManager;
+
+    static EntityManagerFactory entityManagerFactory;
 
     public static void Main() {
         try {
