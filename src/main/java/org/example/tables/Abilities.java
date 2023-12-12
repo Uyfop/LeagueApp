@@ -1,6 +1,7 @@
 package org.example.tables;
 
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 @Table(name = "ABILITIES", uniqueConstraints = {
@@ -11,7 +12,7 @@ public class Abilities {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ChampName", referencedColumnName = "ChampName")
@@ -71,4 +72,6 @@ public class Abilities {
     public Champions getChampionName() {
         return championName;
     }
+
+
 }
