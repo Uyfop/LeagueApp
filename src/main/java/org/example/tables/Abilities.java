@@ -14,7 +14,7 @@ public class Abilities {
     @Column(name = "id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ChampName", referencedColumnName = "ChampName")
     private Champions championName;
 

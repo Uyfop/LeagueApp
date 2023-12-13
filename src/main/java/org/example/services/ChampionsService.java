@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ChampionsService {
+public class ChampionsService implements ChampionsServiceIF{
 
     private final ChampionsRepository championsRepository;
 
@@ -28,31 +28,18 @@ public class ChampionsService {
     public List<Champions> listAllChampions(){
         return championsRepository.findAll();
     }
+
     public Champions saveChampion(Champions champion) {
         championsRepository.save(champion);
         return champion;
     }
-
-    public boolean deleteChampionByName(String champName) {
-        championsRepository.deleteByChampName(champName);
+    public boolean deleteChampionByName(String champName){
+        Champions champion = championsRepository.getReferenceById(champName);
+        if(champion != null) {
+            championsRepository.delete(champion);
+            return true;
+        }
         return false;
     }
-
-    public boolean doesChampionExist(String champName) {
-        return championsRepository.existsByChampName(champName);
-    }
-
-    public Iterable<Champions> listAllChampionsPaging(Integer pageNr, Integer howManyOnPage) {
-        Pageable pageable = PageRequest.of(pageNr, howManyOnPage);
-        Page<Champions> championsPage = championsRepository.findAll(pageable);
-        return championsPage.getContent();
-    }
-
-//    public Champions updateChampionName(String champName, String newChampName) {
-//        championsRepository.update(champName, newChampName);
-//        Optional<Champions> updatedChampion = championsRepository.findById(newChampName);
-//        return updatedChampion.orElse(null);
-//    }
-
 
 }

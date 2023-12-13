@@ -42,4 +42,17 @@ public class AbilitiesController {
         }
     }
 
+
+    @GetMapping("/abilities/abilityByCD")
+    public ResponseEntity<List<Abilities>> getAbilitiesByCustomQuery(
+            @RequestParam int cooldown
+    ) {
+        List<Abilities> abilities = abilitiesService.getAbilitiesByChampionAndCooldown(cooldown);
+        if (!abilities.isEmpty()) {
+            return ResponseEntity.ok(abilities);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

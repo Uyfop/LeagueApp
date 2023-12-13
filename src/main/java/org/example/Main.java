@@ -3,7 +3,7 @@ package org.example;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import org.example.tablesImport.CreateModel;
+//import org.example.tablesImport.CreateModel;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -16,7 +16,6 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
-@EntityScan("org.example.tables")
 @EnableJpaRepositories("org.example.repositories")
 public class Main {
 
