@@ -13,4 +13,5 @@ public interface ChampionsServiceIF {
     Champions saveChampion(Champions champion);
 
     boolean deleteChampionByName(String champName);
+    Optional<Champions> updateChampion(String champName, Champions updatedChampion);
 }

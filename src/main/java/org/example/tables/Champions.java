@@ -52,5 +52,4 @@ public class Champions {
                 .setParameter("name", championName)
                 .uniqueResult();
     }
-
 }

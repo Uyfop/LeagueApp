@@ -1,6 +1,7 @@
 package org.example.tables;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.Optional;
 
 @Entity

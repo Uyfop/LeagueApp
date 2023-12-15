@@ -41,5 +41,12 @@ public class ChampionsService implements ChampionsServiceIF{
         }
         return false;
     }
+    public Optional<Champions> updateChampion(String champName, Champions updatedChampion) {
+        return championsRepository.findById(champName)
+                .map(champion -> {
+                    champion.setChampType(updatedChampion.getChampType());
+                    return championsRepository.save(champion);
+                });
+    }
 
 }

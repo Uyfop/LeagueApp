@@ -39,7 +39,7 @@ public class ChampionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdChampion);
     }
 
-    @GetMapping(value = "/champions")
+    @GetMapping(value = "/champions/all")
     public ResponseEntity<List<Champions>> getAllChampions() {
         List<Champions> champions = championsService.listAllChampions();
         return ResponseEntity.ok(champions);
@@ -53,5 +53,12 @@ public class ChampionController {
             errors.put(error.getField(), error.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+    @PutMapping("/champions/{champName}")
+    public ResponseEntity<Champions> updateChampion(@PathVariable String champName, @Valid @RequestBody Champions updatedChampion) {
+        Optional<Champions> result = championsService.updateChampion(champName, updatedChampion);
+
+        return result.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
