@@ -14,6 +14,8 @@ public interface BuildsRepository extends JpaRepository<Builds, Long> {
 
    List<Builds> findAll();
 
+    void deleteById(Long id);
+
     boolean existsByChampionChampName(String champName);
 
     Optional<Builds> findByChampionChampName(String champName);

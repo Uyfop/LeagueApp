@@ -22,7 +22,7 @@ public class Champions {
     @OneToMany(mappedBy = "championName", cascade = CascadeType.ALL)
     private List<Abilities> abilities;
 
-    @OneToOne(mappedBy = "champion")
+    @OneToOne(mappedBy = "champion", cascade = CascadeType.ALL)
     private Builds build;
 
     public Champions() {
@@ -51,5 +51,9 @@ public class Champions {
         return session.createQuery("FROM Champions c WHERE c.champName = :name", Champions.class)
                 .setParameter("name", championName)
                 .uniqueResult();
+    }
+
+    public void setBuild(Builds build) {
+        this.build = build;
     }
 }

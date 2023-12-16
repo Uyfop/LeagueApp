@@ -14,6 +14,8 @@ import java.util.Optional;
 public interface AbilitiesRepository extends JpaRepository<Abilities, Long> {
 
     Abilities findById(long id);
+
+    Abilities findByAbilityName(String abilityName);
     List<Abilities> findByChampionName(Champions champion);
 
     @Query("SELECT a FROM Abilities a WHERE a.abilityCD = :cooldown")

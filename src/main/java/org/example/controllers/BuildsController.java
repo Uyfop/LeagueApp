@@ -1,16 +1,21 @@
 package org.example.controllers;
 
 import org.example.services.BuildsService;
+import org.example.tables.Abilities;
 import org.example.tables.Builds;
 import org.example.tables.Items;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import javax.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -42,21 +47,33 @@ public class BuildsController{
     }
 
     @PostMapping("/builds/save")
-    public ResponseEntity<Builds> saveBuild(@RequestBody Builds build) {
+    public ResponseEntity<Builds> saveBuild(@Valid @RequestBody Builds build) {
         List<String> itemNames = build.getItems().stream()
                 .map(Items::getItemName)
                 .collect(Collectors.toList());
         Builds savedBuild = buildsService.saveBuild(build.getChampion().getChampName(), itemNames, build);
-        if (savedBuild != null) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedBuild);
-        } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedBuild);
     }
 
     @DeleteMapping("/builds/{id}")
     public ResponseEntity<Void> deleteBuildById(@PathVariable Long id) {
-        boolean deleted = buildsService.deleteBuildByID(id);
+        boolean deleted = buildsService.deleteBuildById(id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
+
+    @PutMapping("/builds/{id}")
+    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds updatedBuild) {
+        Optional<Builds> result = buildsService.updateBuild(id,updatedBuild);
+        return result.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
 }

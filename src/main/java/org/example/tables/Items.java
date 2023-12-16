@@ -17,7 +17,7 @@ public class Items {
     @NotBlank(message = "Item name cannot be blank")
     private String itemName;
 
-    @ManyToMany(mappedBy = "items")
+    @ManyToMany(mappedBy = "items" , cascade = CascadeType.ALL)
     private List<Builds> builds;
 
     @Column(name = "ItemFirstStat")
@@ -88,5 +88,9 @@ public class Items {
         }
 
         return item;
+    }
+
+    public void setBuilds(List<Builds> builds) {
+        this.builds = builds;
     }
 }

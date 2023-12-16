@@ -14,4 +14,5 @@ public interface ChampionsServiceIF {
 
     boolean deleteChampionByName(String champName);
     Optional<Champions> updateChampion(String champName, Champions updatedChampion);
+    boolean checkRegexChampName(Champions champion);
 }

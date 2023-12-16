@@ -2,7 +2,14 @@ package org.example.controllers;
 
 import org.example.services.AbilitiesService;
 import org.example.tables.Abilities;
+
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.example.tables.Items;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +35,25 @@ public class AbilitiesController {
         }
     }
 
-    @DeleteMapping("/abilities/{abilityId}")
-    public ResponseEntity<?> deleteAbility(@PathVariable Long abilityId) {
+    @DeleteMapping("/abilities/id/{abilityId}")
+    public ResponseEntity<?> deleteAbilityById(@PathVariable Long abilityId) {
         boolean deleted = abilitiesService.deleteAbilityById(abilityId);
-        return deleted ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+        if (deleted) {
+            return ResponseEntity.ok("Ability deleted successfully");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
+    @DeleteMapping("/abilities/abilityname/{abilityName}")
+    public ResponseEntity<?> deleteAbilityByName(@PathVariable String abilityName) {
+        boolean deleted = abilitiesService.deleteAbilityByName(abilityName);
+        if (deleted) {
+            return ResponseEntity.ok("Ability deleted successfully");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
     @GetMapping("/abilities/{championName}")
     public ResponseEntity<List<Abilities>> getAbilitiesByChampion(@PathVariable String championName) {
         List<Abilities> abilities = abilitiesService.getAbilitiesByChampion(championName);
@@ -55,6 +75,21 @@ public class AbilitiesController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PutMapping("/abilities/{abilityID}")
+    public ResponseEntity<Abilities> updateAbility(@PathVariable Long abilityID, @Valid @RequestBody Abilities updatedAbility) {
+        Optional<Abilities> result = abilitiesService.updateAbility(abilityID,updatedAbility);
+        return result.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
 }

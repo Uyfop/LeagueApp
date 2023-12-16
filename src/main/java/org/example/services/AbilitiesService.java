@@ -22,11 +22,14 @@ public class AbilitiesService implements AbilitiesServiceIF{
 
     public Abilities addAbilityToChampion(String champName, Abilities ability) {
         Optional<Champions> champion = championsService.getChampionById(champName);
-        if (champion.isPresent()) {
+        Optional<Abilities> existingAbility = Optional.ofNullable(abilitiesRepository.findByAbilityName((ability).getAbilityName()));
+        if(existingAbility.isPresent())
+            throw new IllegalArgumentException("The ability already exists");
+        if (champion.isPresent() && checkRegexAbilityName(ability)) {
             ability.setChampionName(champion.get());
             return abilitiesRepository.save(ability);
         }
-        return null;
+        throw new IllegalArgumentException("Invalid ability name format");
     }
 
     public List<Abilities> getAbilitiesByChampion(String champName) {
@@ -34,7 +37,7 @@ public class AbilitiesService implements AbilitiesServiceIF{
         if (champion.isPresent()) {
             return abilitiesRepository.findByChampionName(champion.get());
         }
-        return null;
+        throw new IllegalArgumentException("No champion with that name");
     }
 
     public boolean deleteAbilityById(Long abilityId) {
@@ -42,12 +45,39 @@ public class AbilitiesService implements AbilitiesServiceIF{
         if (ability.isPresent()) {
             abilitiesRepository.delete(ability.get());
             return true;
+        } else {
+            throw new IllegalArgumentException("Ability doesn't exist");
         }
-        return false;
+    }
+    public boolean deleteAbilityByName(String abilityName) {
+        Optional<Abilities> ability = Optional.ofNullable(abilitiesRepository.findByAbilityName(abilityName));
+        if (ability.isPresent()) {
+            abilitiesRepository.delete(ability.get());
+            return true;
+        } else {
+            throw new IllegalArgumentException("Ability doesn't exist");
+        }
     }
 
     public List<Abilities> getAbilitiesByChampionAndCooldown(int cooldown) {
         return abilitiesRepository.findAbilitiesByChampionAndCooldown(cooldown);
     }
 
+    public Optional<Abilities> updateAbility(Long abilityId, Abilities updatedAbility) {
+        Optional<Abilities> existingAbility = abilitiesRepository.findById(abilityId);
+        if(!existingAbility.isPresent())
+            throw new IllegalArgumentException("Ability doesn't exist");
+        return existingAbility.map(ability -> {
+            ability.setAbilityName(updatedAbility.getAbilityName());
+            ability.setAbilityCD(updatedAbility.getAbilityCD());
+            ability.setAbilityDescription(updatedAbility.getAbilityDescription());
+            ability.setAbilityCost(updatedAbility.getAbilityCost());
+            return abilitiesRepository.save(ability);
+        });
+    }
+    public boolean checkRegexAbilityName(Abilities ability) {
+        String abilityName = ability.getAbilityName();
+        String regexPattern = "^[A-Za-z]+$";
+        return abilityName.matches(regexPattern);
+    }
 }

@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -58,6 +56,14 @@ public class ItemsController {
             errors.put(error.getField(), error.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/item/{itemName}")

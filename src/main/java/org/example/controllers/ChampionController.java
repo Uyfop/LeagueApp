@@ -7,12 +7,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.example.services.ChampionsService;
 import org.example.tables.Champions;
+import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api")
@@ -44,6 +43,14 @@ public class ChampionController {
         List<Champions> champions = championsService.listAllChampions();
         return ResponseEntity.ok(champions);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -54,6 +61,8 @@ public class ChampionController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
+
+
     @PutMapping("/champions/{champName}")
     public ResponseEntity<Champions> updateChampion(@PathVariable String champName, @Valid @RequestBody Champions updatedChampion) {
         Optional<Champions> result = championsService.updateChampion(champName, updatedChampion);
@@ -61,4 +70,5 @@ public class ChampionController {
         return result.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 @Service
@@ -50,17 +51,32 @@ public class BuildsService implements BuildsServiceIF{
             build.setCreationDate(now);
             return buildsRepository.save(build);
         }
-        return null;
+        throw new IllegalArgumentException("Build for that champion already exists");
     }
 
-    public boolean deleteBuildByID(Long id){
-        Builds build = buildsRepository.getReferenceById(id);
-        if(build != null) {
+    public boolean deleteBuildById(Long id) {
+        Optional<Builds> buildOptional = buildsRepository.findById(id);
+
+        if (buildOptional.isPresent()) {
+            Builds build = buildOptional.get();
+
+            List<Items> items = build.getItems();
+            for (Items item : items) {
+                item.setBuilds(null);
+            }
+            Champions champion = build.getChampion();
+            if (champion != null) {
+                champion.setBuild(null);
+
+            }
             buildsRepository.delete(build);
             return true;
+        } else {
+            throw new IllegalArgumentException("The build doesn't exist");
         }
-        return false;
     }
+
+
 
     public boolean getBuildsByChampion(String champName) {
         return buildsRepository.existsByChampionChampName(champName);
@@ -68,5 +84,19 @@ public class BuildsService implements BuildsServiceIF{
 
     public Optional<Builds> findBuildByChampion(String champName){
         return buildsRepository.findByChampionChampName(champName);
+    }
+
+    public Optional<Builds> updateBuild(Long id, Builds updatedBuild) {
+        Optional<Builds> optionalBuild = buildsRepository.findById(id);
+
+        if (optionalBuild.isPresent()) {
+            Builds build = optionalBuild.get();
+            build.setItems(updatedBuild.getItems());
+            build.setChampion(updatedBuild.getChampion());
+            Builds savedBuild = buildsRepository.save(build);
+            return Optional.of(savedBuild);
+        } else {
+            return Optional.empty();
+        }
     }
 }

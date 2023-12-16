@@ -10,4 +10,6 @@ public interface ItemsServiceIF {
     Items saveItem(Items item);
     boolean deleteItemByName(String itemName);
     Optional<Items> updateItem(String itemName, Items updatedItem);
+
+    boolean checkRegexItemName(Items item);
 }

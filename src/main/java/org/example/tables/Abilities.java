@@ -74,5 +74,4 @@ public class Abilities {
         return championName;
     }
 
-
 }

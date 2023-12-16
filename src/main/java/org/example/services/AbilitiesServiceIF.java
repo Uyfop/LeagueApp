@@ -14,4 +14,9 @@ public interface AbilitiesServiceIF  {
     boolean deleteAbilityById(Long abilityId);
 
     List<Abilities> getAbilitiesByChampionAndCooldown(int cooldown);
+
+    Optional<Abilities> updateAbility(Long abilityId, Abilities updatedAbility);
+    boolean checkRegexAbilityName(Abilities ability);
+    boolean deleteAbilityByName(String abilityName);
+
 }
