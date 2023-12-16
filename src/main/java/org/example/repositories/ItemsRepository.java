@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 public interface ItemsRepository extends JpaRepository<Items, String> {
-    Items findByItemName(String itemName); // Updated method name
+    Items findByItemName(String itemName);
     List<Items> findAll();
 
 }

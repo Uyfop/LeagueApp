@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+
 @Service
 public class ItemService implements ItemsServiceIF{
 
@@ -34,4 +36,18 @@ public class ItemService implements ItemsServiceIF{
         }
         return false;
     }
+
+    public Optional<Items> updateItem(String itemName, Items updatedItem) {
+        Optional<Items> optionalItem = Optional.ofNullable(itemsRepository.findByItemName(itemName));
+        if (optionalItem.isPresent()) {
+            Items item = optionalItem.get();
+            item.setItemFirstStat(updatedItem.getItemFirstStat());
+            item.setItemSecondStat(updatedItem.getItemSecondStat());
+            item.setItemThirdStat(updatedItem.getItemThirdStat());
+            return Optional.of(itemsRepository.save(item));
+        } else {
+            return Optional.empty();
+        }
+    }
+
 }

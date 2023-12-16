@@ -1,5 +1,6 @@
 package org.example.controllers;
 import org.example.services.ItemService;
+import org.example.tables.Champions;
 import org.example.tables.Items;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -56,5 +58,12 @@ public class ItemsController {
             errors.put(error.getField(), error.getDefaultMessage());
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
+
+    @PutMapping("/item/{itemName}")
+    public ResponseEntity<Items> updateItem(@PathVariable String itemName, @Valid @RequestBody Items updatedItem) {
+        Optional<Items> result = itemService.updateItem(itemName, updatedItem);
+        return result.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
