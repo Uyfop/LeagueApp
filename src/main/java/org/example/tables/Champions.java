@@ -22,7 +22,7 @@ public class Champions {
     @OneToMany(mappedBy = "championName", cascade = CascadeType.ALL)
     private List<Abilities> abilities;
 
-    @OneToOne(mappedBy = "champion", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "champion")
     private Builds build;
 
     public Champions() {
@@ -53,7 +53,13 @@ public class Champions {
                 .uniqueResult();
     }
 
-    public void setBuild(Builds build) {
-        this.build = build;
-    }
+//    public void setBuild(Builds build) {
+//        this.build = build;
+//    }
+//
+//    public Builds getBuild() {
+//        return build;
+//    }
+
+
 }

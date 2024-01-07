@@ -47,25 +47,55 @@ public class BuildsController{
     }
 
     @PostMapping("/builds/save")
-    public ResponseEntity<Builds> saveBuild(@Valid @RequestBody Builds build) {
-        List<String> itemNames = build.getItems().stream()
-                .map(Items::getItemName)
-                .collect(Collectors.toList());
-        Builds savedBuild = buildsService.saveBuild(build.getChampion().getChampName(), itemNames, build);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedBuild);
+    public ResponseEntity<?> saveBuild(@Valid @RequestBody Builds build) {
+        try {
+            if (build.getChampion() == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Champion is required for saving the build.");
+            }
+
+            // Log champion details for debugging
+            System.out.println("Champion details: " + build.getChampion().toString());
+
+            List<String> itemNames = build.getItems().stream()
+                    .map(Items::getItemName)
+                    .collect(Collectors.toList());
+
+            Builds savedBuild = buildsService.saveBuild(build.getChampion().getChampName(), itemNames, build);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedBuild);
+        } catch (NullPointerException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred while processing the request.");
+        }
     }
 
-    @DeleteMapping("/builds/{id}")
-    public ResponseEntity<Void> deleteBuildById(@PathVariable Long id) {
-        boolean deleted = buildsService.deleteBuildById(id);
-        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+
+    @DeleteMapping("/builds/{buildId}")
+    public ResponseEntity<Void> deleteBuild(@PathVariable Long buildId) {
+        boolean deleted = buildsService.deleteBuildById(buildId);
+
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PutMapping("/builds/{id}")
-    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds updatedBuild) {
-        Optional<Builds> result = buildsService.updateBuild(id,updatedBuild);
-        return result.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PutMapping("/builds/update/{id}")
+    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds build) {
+        Optional<Builds> existingBuildOptional = buildsService.GetBuildById(id);
+
+        if (existingBuildOptional.isPresent()) {
+            Builds existingBuild = existingBuildOptional.get();
+            Builds updatedBuild = buildsService.updateBuild(existingBuild.getId(), build.getChampion().getChampName(),
+                    build.getItems().stream()
+                            .map(Items::getItemName)
+                            .collect(Collectors.toList()),
+                    build);
+            return ResponseEntity.ok(updatedBuild);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -74,6 +104,11 @@ public class BuildsController{
         body.put("message", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+    @GetMapping("/builds/item/{itemName}")
+    public ResponseEntity<List<Builds>> findBuildsByItemName(@PathVariable String itemName) {
+        List<Builds> builds = buildsService.findBuildsByItemName(itemName);
+        return ResponseEntity.ok(builds);
     }
 
 }

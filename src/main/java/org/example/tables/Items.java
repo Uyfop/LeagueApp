@@ -90,7 +90,11 @@ public class Items {
         return item;
     }
 
-    public void setBuilds(List<Builds> builds) {
-        this.builds = builds;
-    }
+//    public void setBuilds(List<Builds> builds) {
+//        this.builds = builds;
+//    }
+//
+//    public List<Builds> getBuilds() {
+//        return builds;
+//    }
 }

@@ -64,4 +64,8 @@ public class ChampionsService implements ChampionsServiceIF{
         return champName.matches(regexPattern);
     }
 
+    public Page<Champions> listAllChampionsWithPagination(Pageable pageable) {
+        return championsRepository.findAll(pageable);
+    }
+
 }
