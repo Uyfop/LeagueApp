@@ -16,6 +16,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class ChampionController {
