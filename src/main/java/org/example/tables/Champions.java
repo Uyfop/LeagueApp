@@ -3,6 +3,7 @@ package org.example.tables;
 import org.hibernate.Session;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 @Entity
@@ -12,6 +13,7 @@ import java.util.List;
 public class Champions {
     @Id
     @Column(name = "ChampName", unique = true)
+    @NotBlank(message = "Champion name cannot be blank")
     private String champName;
 
     @Column(name = "ChampType")
@@ -50,5 +52,14 @@ public class Champions {
                 .setParameter("name", championName)
                 .uniqueResult();
     }
+
+//    public void setBuild(Builds build) {
+//        this.build = build;
+//    }
+//
+//    public Builds getBuild() {
+//        return build;
+//    }
+
 
 }

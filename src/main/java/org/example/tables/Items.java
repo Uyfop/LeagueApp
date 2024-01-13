@@ -3,6 +3,7 @@ package org.example.tables;
 import org.hibernate.Session;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,9 +14,10 @@ import java.util.List;
 public class Items {
     @Id
     @Column(name = "ItemName", unique = true)
+    @NotBlank(message = "Item name cannot be blank")
     private String itemName;
 
-    @ManyToMany(mappedBy = "items")
+    @ManyToMany(mappedBy = "items" , cascade = CascadeType.ALL)
     private List<Builds> builds;
 
     @Column(name = "ItemFirstStat")
@@ -87,4 +89,12 @@ public class Items {
 
         return item;
     }
+
+//    public void setBuilds(List<Builds> builds) {
+//        this.builds = builds;
+//    }
+//
+//    public List<Builds> getBuilds() {
+//        return builds;
+//    }
 }
