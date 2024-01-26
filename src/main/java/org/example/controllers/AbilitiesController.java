@@ -58,6 +58,7 @@ public class AbilitiesController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/abilities/{championName}")
     public ResponseEntity<List<Abilities>> getAbilitiesByChampion(@PathVariable String championName) {
         List<Abilities> abilities = abilitiesService.getAbilitiesByChampion(championName);
@@ -84,6 +85,13 @@ public class AbilitiesController {
     @PutMapping("/abilities/{abilityID}")
     public ResponseEntity<Abilities> updateAbility(@PathVariable Long abilityID, @Valid @RequestBody Abilities updatedAbility) {
         Optional<Abilities> result = abilitiesService.updateAbility(abilityID,updatedAbility);
+        return result.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/abilities/updatebyName/{abilityName}")
+    public ResponseEntity<Abilities> updateAbility(@PathVariable String abilityName, @Valid @RequestBody Abilities updatedAbility) {
+        Optional<Abilities> result = abilitiesService.updateAbilityByName(abilityName,updatedAbility);
         return result.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
