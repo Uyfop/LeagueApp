@@ -17,7 +17,7 @@ public class Builds {
     private Long id;
 
 //    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    @OneToOne()
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "ChampName", referencedColumnName = "ChampName")
     private Champions champion;
 
@@ -31,6 +31,8 @@ public class Builds {
 
     @Column(name = "creation_date")
     private ZonedDateTime creationDate;
+
+
 
     public void setChampion(Champions champion) {
         this.champion = champion;

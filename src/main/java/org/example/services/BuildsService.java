@@ -9,6 +9,7 @@ import org.example.tables.Champions;
 import org.example.tables.Items;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -18,19 +19,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class BuildsService implements BuildsServiceIF{
 
     private final BuildsRepository buildsRepository;
-
-    private final ChampionsService championsService;
     private final ChampionsRepository championsRepository;
     private final ItemsRepository itemsRepository;
-    private final ItemService itemService;
+
     @Autowired
-    public BuildsService(BuildsRepository buildsRepository, ChampionsService championsService, ItemService itemService, ChampionsRepository championsRepository, ItemsRepository itemsRepository) {
+    public BuildsService(BuildsRepository buildsRepository, ChampionsRepository championsRepository, ItemsRepository itemsRepository) {
         this.buildsRepository = buildsRepository;
-        this.championsService = championsService;
-        this.itemService = itemService;
         this.championsRepository = championsRepository;
         this.itemsRepository = itemsRepository;
     }
@@ -40,31 +38,32 @@ public class BuildsService implements BuildsServiceIF{
     public List<Builds> ListAllBuilds(){
         return buildsRepository.findAll();
     }
+
+    public Optional<Builds> getBuildForChampion(String champName) {
+        return buildsRepository.findByChampionChampName(champName);
+    }
+
     public Builds saveBuild(String champName, List<String> itemNames, Builds build) {
-        Optional<Champions> championOptional = championsService.getChampionById(champName);
-        List<Items> items = new ArrayList<>();
+        Optional<Champions> championOptional = championsRepository.findById(champName);
 
         if (championOptional.isPresent()) {
             Champions champion = championOptional.get();
+
+            if (getBuildsByChampion(champName)) {
+                throw new IllegalArgumentException("Champion already has a build.");
+            }
+
             build.setChampion(champion);
 
-            if (itemNames != null) {
-                for (String itemName : itemNames) {
-                    Items item = itemService.GetItemByName(itemName);
-                    if (item != null) {
-                        items.add(item);
-                    }
-                }
-            }
+            List<Items> items = itemNames.stream()
+                    .map(itemName -> itemsRepository.findById(itemName).orElseThrow(EntityNotFoundException::new))
+                    .collect(Collectors.toList());
             build.setItems(items);
+
             ZonedDateTime now = ZonedDateTime.now();
             build.setCreationDate(now);
 
-            if (build.getChampion() != null) {
-                return buildsRepository.save(build);
-            } else {
-                throw new IllegalArgumentException("Champion not set in the build");
-            }
+            return buildsRepository.save(build);
         } else {
             throw new IllegalArgumentException("Champion not found");
         }
@@ -74,6 +73,7 @@ public class BuildsService implements BuildsServiceIF{
         Optional<Builds> build = buildsRepository.findById(buildId);
 
         if (build.isPresent()) {
+
             buildsRepository.delete(build.get());
             return true;
         } else {
@@ -88,11 +88,10 @@ public class BuildsService implements BuildsServiceIF{
         return buildsRepository.findByChampionChampName(champName);
     }
 
-    public Builds updateBuild(Long buildId, String championName, List<String> itemNames, Builds updatedBuild) {
+    public Builds updateBuild(Long buildId, List<String> itemNames, Builds updatedBuild) {
         Builds existingBuild = buildsRepository.findById(buildId).orElseThrow(EntityNotFoundException::new);
 
-        Champions champion = championsRepository.findById(championName).orElseThrow(EntityNotFoundException::new);
-        existingBuild.setChampion(champion);
+        updatedBuild.setChampion(existingBuild.getChampion());
 
         List<Items> items = itemNames.stream()
                 .map(itemName -> itemsRepository.findById(itemName).orElseThrow(EntityNotFoundException::new))
@@ -103,19 +102,8 @@ public class BuildsService implements BuildsServiceIF{
     }
 
 
-
     public List<Builds> findBuildsByItemName(String itemName) {
         return buildsRepository.findBuildsByItemName(itemName);
     }
-//    public void disassociateChampion(Champions champion) {
-//        if (champion != null) {
-//            champion.setBuild(null);
-//        }
-//    }
-//
-//    public void disassociateItems(List<Items> items) {
-//        for (Items item : items) {
-//            item.getBuilds().clear();
-//        }
-//    }
+
 }

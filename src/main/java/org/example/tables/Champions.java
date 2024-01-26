@@ -22,7 +22,7 @@ public class Champions {
     @OneToMany(mappedBy = "championName", cascade = CascadeType.ALL)
     private List<Abilities> abilities;
 
-    @OneToOne(mappedBy = "champion")
+    @OneToOne(mappedBy = "champion", cascade = CascadeType.ALL)
     private Builds build;
 
     public Champions() {

@@ -54,7 +54,6 @@ public class BuildsController{
                         .body("Champion is required for saving the build.");
             }
 
-            // Log champion details for debugging
             System.out.println("Champion details: " + build.getChampion().toString());
 
             List<String> itemNames = build.getItems().stream()
@@ -82,21 +81,23 @@ public class BuildsController{
     }
 
     @PutMapping("/builds/update/{id}")
-    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds build) {
+    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds updatedBuild) {
         Optional<Builds> existingBuildOptional = buildsService.GetBuildById(id);
-
         if (existingBuildOptional.isPresent()) {
             Builds existingBuild = existingBuildOptional.get();
-            Builds updatedBuild = buildsService.updateBuild(existingBuild.getId(), build.getChampion().getChampName(),
-                    build.getItems().stream()
+            updatedBuild.setChampion(existingBuild.getChampion());
+            Builds result = buildsService.updateBuild(existingBuild.getId(),
+                    updatedBuild.getItems().stream()
                             .map(Items::getItemName)
                             .collect(Collectors.toList()),
-                    build);
-            return ResponseEntity.ok(updatedBuild);
+                    updatedBuild);
+
+            return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, Object> body = new LinkedHashMap<>();

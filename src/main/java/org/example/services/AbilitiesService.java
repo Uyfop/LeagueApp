@@ -4,6 +4,8 @@ import org.example.tables.Abilities;
 import org.example.tables.Champions;
 import org.example.repositories.AbilitiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -79,5 +81,8 @@ public class AbilitiesService implements AbilitiesServiceIF{
         String abilityName = ability.getAbilityName();
         String regexPattern = "^[A-Za-z]+$";
         return abilityName.matches(regexPattern);
+    }
+    public Page<Abilities> listAllAbilitiesWithPagination(Pageable pageable) {
+        return abilitiesRepository.findAll(pageable);
     }
 }

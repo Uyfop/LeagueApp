@@ -15,10 +15,10 @@ public interface BuildsServiceIF {
     boolean deleteBuildById(Long id);
     boolean getBuildsByChampion(String champName);
     Optional<Builds> findBuildByChampion(String champName);
-    Builds updateBuild(Long buildId, String championName, List<String> itemNames, Builds updatedBuild);
+    Builds updateBuild(Long buildId, List<String> itemNames, Builds updatedBuild);
     List<Builds> findBuildsByItemName(String itemName);
 //    void disassociateChampion(Champions champion);
 //    void disassociateItems(List<Items> items);
-
+    Optional<Builds> getBuildForChampion(String champName);
 
 }
