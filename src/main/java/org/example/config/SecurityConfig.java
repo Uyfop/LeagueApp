@@ -55,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/champions/**").authenticated()
                 .antMatchers("/api/abilities/**").authenticated()
                 .antMatchers("/api/items/**").authenticated()
+                .antMatchers("/api/builds/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .cors();

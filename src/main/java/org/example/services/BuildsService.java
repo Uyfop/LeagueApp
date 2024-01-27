@@ -8,6 +8,8 @@ import org.example.tables.Builds;
 import org.example.tables.Champions;
 import org.example.tables.Items;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,4 +108,7 @@ public class BuildsService implements BuildsServiceIF{
         return buildsRepository.findBuildsByItemName(itemName);
     }
 
+    public Page<Builds> listAllBuilds(Pageable pageable) {
+        return buildsRepository.findAll(pageable);
+    }
 }

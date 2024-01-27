@@ -6,6 +6,8 @@ import org.example.tables.Builds;
 import org.example.tables.Items;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class BuildsController{
@@ -111,5 +114,11 @@ public class BuildsController{
         List<Builds> builds = buildsService.findBuildsByItemName(itemName);
         return ResponseEntity.ok(builds);
     }
+    @GetMapping("/builds/allpages")
+    public ResponseEntity<Page<Builds>> getAllBuilds(Pageable pageable) {
+        Page<Builds> builds = buildsService.listAllBuilds(pageable);
+        return ResponseEntity.ok(builds);
+    }
+
 
 }
