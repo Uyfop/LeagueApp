@@ -4,6 +4,8 @@ import org.example.tables.Abilities;
 import org.example.tables.Champions;
 import org.example.repositories.AbilitiesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -75,9 +77,25 @@ public class AbilitiesService implements AbilitiesServiceIF{
             return abilitiesRepository.save(ability);
         });
     }
+
+    public Optional<Abilities> updateAbilityByName(String abilityName, Abilities updatedAbility) {
+        Optional<Abilities> existingAbility = Optional.ofNullable(abilitiesRepository.findByAbilityName(abilityName));
+        if(!existingAbility.isPresent())
+            throw new IllegalArgumentException("Ability doesn't exist");
+        return existingAbility.map(ability -> {
+            ability.setAbilityName(updatedAbility.getAbilityName());
+            ability.setAbilityCD(updatedAbility.getAbilityCD());
+            ability.setAbilityDescription(updatedAbility.getAbilityDescription());
+            ability.setAbilityCost(updatedAbility.getAbilityCost());
+            return abilitiesRepository.save(ability);
+        });
+    }
     public boolean checkRegexAbilityName(Abilities ability) {
         String abilityName = ability.getAbilityName();
         String regexPattern = "^[A-Za-z]+$";
         return abilityName.matches(regexPattern);
+    }
+    public Page<Abilities> listAllAbilitiesWithPagination(Pageable pageable) {
+        return abilitiesRepository.findAll(pageable);
     }
 }

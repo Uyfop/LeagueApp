@@ -10,12 +10,16 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.example.tables.Items;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class AbilitiesController {
@@ -54,6 +58,7 @@ public class AbilitiesController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/abilities/{championName}")
     public ResponseEntity<List<Abilities>> getAbilitiesByChampion(@PathVariable String championName) {
         List<Abilities> abilities = abilitiesService.getAbilitiesByChampion(championName);
@@ -83,6 +88,13 @@ public class AbilitiesController {
         return result.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/abilities/updatebyName/{abilityName}")
+    public ResponseEntity<Abilities> updateAbility(@PathVariable String abilityName, @Valid @RequestBody Abilities updatedAbility) {
+        Optional<Abilities> result = abilitiesService.updateAbilityByName(abilityName,updatedAbility);
+        return result.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
@@ -90,6 +102,15 @@ public class AbilitiesController {
         body.put("message", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/abilities")
+    public ResponseEntity<Page<Abilities>> getAllAbilitiesWithPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "1") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Abilities> abilitiesPage = abilitiesService.listAllAbilitiesWithPagination(pageable);
+        return ResponseEntity.ok(abilitiesPage);
     }
 
 }

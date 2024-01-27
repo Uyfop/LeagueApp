@@ -3,6 +3,9 @@ import org.example.services.ItemService;
 import org.example.tables.Champions;
 import org.example.tables.Items;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.*;
-
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class ItemsController {
@@ -71,5 +74,15 @@ public class ItemsController {
         Optional<Items> result = itemService.updateItem(itemName, updatedItem);
         return result.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(value = "/item")
+    public ResponseEntity<Page<Items>> getAllItems(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Items> items = itemService.listAllItemsPaginated(pageable);
+        return ResponseEntity.ok(items);
     }
 }

@@ -15,7 +15,7 @@ import java.util.Optional;
 public interface BuildsRepository extends JpaRepository<Builds, Long> {
     Optional<Builds> findById(Long id);
 
-   List<Builds> findAll();
+    List<Builds> findAll();
 
     void deleteById(Long id);
 

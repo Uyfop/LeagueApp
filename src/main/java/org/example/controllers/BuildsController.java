@@ -6,6 +6,8 @@ import org.example.tables.Builds;
 import org.example.tables.Items;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api")
 public class BuildsController{
@@ -54,7 +57,6 @@ public class BuildsController{
                         .body("Champion is required for saving the build.");
             }
 
-            // Log champion details for debugging
             System.out.println("Champion details: " + build.getChampion().toString());
 
             List<String> itemNames = build.getItems().stream()
@@ -82,21 +84,23 @@ public class BuildsController{
     }
 
     @PutMapping("/builds/update/{id}")
-    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds build) {
+    public ResponseEntity<Builds> updateBuild(@PathVariable Long id, @Valid @RequestBody Builds updatedBuild) {
         Optional<Builds> existingBuildOptional = buildsService.GetBuildById(id);
-
         if (existingBuildOptional.isPresent()) {
             Builds existingBuild = existingBuildOptional.get();
-            Builds updatedBuild = buildsService.updateBuild(existingBuild.getId(), build.getChampion().getChampName(),
-                    build.getItems().stream()
+            updatedBuild.setChampion(existingBuild.getChampion());
+            Builds result = buildsService.updateBuild(existingBuild.getId(),
+                    updatedBuild.getItems().stream()
                             .map(Items::getItemName)
                             .collect(Collectors.toList()),
-                    build);
-            return ResponseEntity.ok(updatedBuild);
+                    updatedBuild);
+
+            return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgumentException(IllegalArgumentException ex) {
         Map<String, Object> body = new LinkedHashMap<>();
@@ -110,5 +114,11 @@ public class BuildsController{
         List<Builds> builds = buildsService.findBuildsByItemName(itemName);
         return ResponseEntity.ok(builds);
     }
+    @GetMapping("/builds/allpages")
+    public ResponseEntity<Page<Builds>> getAllBuilds(Pageable pageable) {
+        Page<Builds> builds = buildsService.listAllBuilds(pageable);
+        return ResponseEntity.ok(builds);
+    }
+
 
 }

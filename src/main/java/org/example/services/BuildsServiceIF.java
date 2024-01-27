@@ -3,6 +3,8 @@ package org.example.services;
 import org.example.tables.Builds;
 import org.example.tables.Items;
 import org.example.tables.Champions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +17,11 @@ public interface BuildsServiceIF {
     boolean deleteBuildById(Long id);
     boolean getBuildsByChampion(String champName);
     Optional<Builds> findBuildByChampion(String champName);
-    Builds updateBuild(Long buildId, String championName, List<String> itemNames, Builds updatedBuild);
+    Builds updateBuild(Long buildId, List<String> itemNames, Builds updatedBuild);
     List<Builds> findBuildsByItemName(String itemName);
 //    void disassociateChampion(Champions champion);
 //    void disassociateItems(List<Items> items);
+    Optional<Builds> getBuildForChampion(String champName);
 
-
+    Page<Builds> listAllBuilds(Pageable pageable);
 }
